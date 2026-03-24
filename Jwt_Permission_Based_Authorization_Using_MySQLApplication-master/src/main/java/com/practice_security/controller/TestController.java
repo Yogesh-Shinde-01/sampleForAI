@@ -20,8 +20,8 @@ public class TestController {
 	@GetMapping("/users")
 	public List<User> getUsers() {
 		return userService.getUsers();
-
-
 	}
+
+	
 
 }
