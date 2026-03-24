@@ -24,4 +24,5 @@ public class CustomUserDetailService implements UserDetailsService {
 		user.setAuthorities(Collections.singletonList(new SimpleGrantedAuthority(user.getRole())));
 		return user;
 	}
+
 }
