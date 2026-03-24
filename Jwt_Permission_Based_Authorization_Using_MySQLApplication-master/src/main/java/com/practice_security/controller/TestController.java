@@ -21,7 +21,4 @@ public class TestController {
 	public List<User> getUsers() {
 		return userService.getUsers();
 	}
-
-	
-
 }
