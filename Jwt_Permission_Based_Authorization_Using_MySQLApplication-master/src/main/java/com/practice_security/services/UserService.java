@@ -26,7 +26,7 @@ public class UserService {
 	}
 
 
-	
+
 	public User createUser(User user) {
 
 		user.setUserId(UUID.randomUUID().toString());
