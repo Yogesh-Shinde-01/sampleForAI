@@ -62,6 +62,27 @@ public class SecurityConfig {
 		return provider;
 	}
 
-	
+
+
+	@Bean
+	public DaoAuthenticationProvider daoAuthenticationProvider() {
+
+		int retryCount = 5; // Intentional magic number for testing
+
+		log.info("Retry Count: {}", retryCount);
+
+		DaoAuthenticationProvider provider =
+				new DaoAuthenticationProvider();
+
+		provider.setUserDetailsService(
+				customUserDetailService
+		);
+
+		provider.setPasswordEncoder(
+				passwordEncoder
+		);
+
+		return provider;
+	}
 
 }
