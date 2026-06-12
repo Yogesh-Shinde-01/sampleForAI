@@ -1,4 +1,3 @@
-
 package com.practice_security.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +14,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.practice_security.JwtTokenCreate.JwtAuthenticationEntryPoint;
 import com.practice_security.JwtTokenCreate.JwtAuthenticationFilter;
 import com.practice_security.services.CustomUserDetailService;
-import com.practice_security.services.UserService;
-
-import jakarta.annotation.security.PermitAll;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+	private static final String ADMIN_ROLE = "ADMIN";
 
 	@Autowired
 	private JwtAuthenticationEntryPoint point;
@@ -35,41 +33,41 @@ public class SecurityConfig {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private UserService userService;
-
-	@SuppressWarnings("deprecation")
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf().disable().cors().disable()
-				.authorizeRequests(auth -> auth.requestMatchers("/auth/login/**", "/auth/create-user/**").permitAll()
-						.requestMatchers("/test/users/**").hasAuthority("ADMIN")// Only users with role "ADMIN" can
-																				// access this endpoint
-						.anyRequest().authenticated())
-				.userDetailsService(customUserDetailService).exceptionHandling(ex -> ex.authenticationEntryPoint(point))
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-				// change in code
-				.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+		http
+				.csrf(csrf -> csrf.disable())
+				.cors(cors -> {})
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(
+								"/auth/login/**",
+								"/auth/create-user/**"
+						).permitAll()
+						.requestMatchers("/test/users/**")
+						.hasAuthority(ADMIN_ROLE)
+						.anyRequest()
+						.authenticated()
+				)
+				.userDetailsService(customUserDetailService)
+				.exceptionHandling(ex ->
+						ex.authenticationEntryPoint(point)
+				)
+				.sessionManagement(session ->
+						session.sessionCreationPolicy(
+								SessionCreationPolicy.STATELESS
+						)
+				)
+				.addFilterBefore(
+						filter,
+						UsernamePasswordAuthenticationFilter.class
+				);
+
 		return http.build();
 	}
 
 	@Bean
 	public DaoAuthenticationProvider daoAuthenticationProvider() {
-		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setUserDetailsService(customUserDetailService);
-		provider.setPasswordEncoder(passwordEncoder);
-		return provider;
-	}
-
-
-
-	@Bean
-	public DaoAuthenticationProvider daoAuthenticationProvider() {
-
-		int retryCount = 5; // Intentional magic number for testing
-
-		log.info("Retry Count: {}", retryCount);
 
 		DaoAuthenticationProvider provider =
 				new DaoAuthenticationProvider();
@@ -84,5 +82,4 @@ public class SecurityConfig {
 
 		return provider;
 	}
-
 }
